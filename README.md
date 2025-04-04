@@ -111,3 +111,12 @@ We aim to develop a ResQ Bridge mobile app where users can report accidents, req
 9. AI-based Medical Assistance Chatbot
 
 An AI-powered chatbot will be integrated to guide users in providing first aid while waiting for emergency services. The chatbot will analyze the situation and give real-time medical instructions based on the injury type detected in the call or text input.
+
+Some Screenshots
+1. Accident Detection Model and Severity Prediction
+  ![image](https://github.com/user-attachments/assets/09755b0d-08f1-439a-b5e8-cd6dbb4e1a92)
+  ![image](https://github.com/user-attachments/assets/d69b9216-cebb-4fb2-aa3f-9d2f41cc9389)
+  ![image](https://github.com/user-attachments/assets/45c3176b-9937-448e-b23c-63c875493cf8)
+
+3. NLP Model
+  

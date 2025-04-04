@@ -33,9 +33,8 @@ export default function AdminUsers() {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("authToken");
-      if (!token) throw new Error("Authentication token not found");
-      const data = await getUsers(token);
+      // Removed token argument as getUsers expects no arguments
+      const data = await getUsers();
       setUsers(data);
     } catch (err: any) {
       setError(err.message || "Error fetching users");

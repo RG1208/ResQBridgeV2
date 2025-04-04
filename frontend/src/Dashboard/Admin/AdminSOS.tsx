@@ -28,6 +28,9 @@ export default function AdminSOSPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState<Partial<SOSReport>>({});
 
+  // Example: Retrieve the auth token from your authentication context or similar
+  const token = "your-auth-token"; // Replace with your actual token retrieval logic
+
   useEffect(() => {
     loadReports();
   }, []);
@@ -35,7 +38,7 @@ export default function AdminSOSPage() {
   const loadReports = async () => {
     setLoading(true);
     try {
-      const data = await getSOSReports();
+      const data = await getSOSReports(token);
       if (Array.isArray(data)) setReports(data);
       else setError("Unexpected response format");
     } catch (err: any) {
@@ -47,7 +50,6 @@ export default function AdminSOSPage() {
 
   const handleEdit = (report: SOSReport) => {
     setEditingId(report.id);
-    // Copy only the fields we want to edit
     setEditData({ 
       location: report.location, 
       severity: report.severity, 
@@ -61,7 +63,8 @@ export default function AdminSOSPage() {
 
   const handleSave = async (id: number) => {
     try {
-      await updateSOSReport(id, editData);
+      // Pass the token as the third argument
+      await updateSOSReport(id, editData, token);
       alert("SOS report updated successfully");
       await loadReports();
       setEditingId(null);
@@ -73,7 +76,8 @@ export default function AdminSOSPage() {
   const handleDelete = async (id: number) => {
     if (!window.confirm("Are you sure you want to delete this report?")) return;
     try {
-      await deleteSOSReport(id);
+      // Pass the token as the second argument
+      await deleteSOSReport(id, token);
       alert("SOS report deleted successfully");
       await loadReports();
     } catch (err: any) {
@@ -126,39 +130,46 @@ export default function AdminSOSPage() {
                 {editingId === report.id ? (
                   <>
                     <td className="px-4 py-2 border-r">
-                      <Input value={editData.location || ""} onChange={(e) => handleChange("location", e.target.value)} className="w-full" />
+                      <Input
+                        value={editData.location || ""}
+                        onChange={(e) => handleChange("location", e.target.value)}
+                        className="w-full"
+                      />
                     </td>
                     <td className="px-4 py-2 border-r">
-                      <Input value={editData.severity || ""} onChange={(e) => handleChange("severity", e.target.value)} className="w-full" />
+                      <Input
+                        value={editData.severity || ""}
+                        onChange={(e) => handleChange("severity", e.target.value)}
+                        className="w-full"
+                      />
                     </td>
                     <td className="px-4 py-2 border-r">
                       <select
-                        value={editData.status || ""}                       
-                        onChange={(e) => handleChange("status", e.target.value)}                      
+                        value={editData.status || ""}
+                        onChange={(e) => handleChange("status", e.target.value)}
                         className="w-full border rounded px-2 py-1 focus:outline-none focus:ring focus:border-blue-300 transition"
-                      >                     
-                        <option value="Pending">Pending</option>                        
-                        <option value="In Progress">In Progress</option>                      
-                        <option value="Resolved">Resolved</option>                      
-                      </select>                   
-                    </td>                  
-                  </>                
-                ) : (                
-                  <>                  
-                    <td className="px-4 py-2 border-r">
-                      {report.location}
-                    </td>                    
-                    <td className="px-4 py-2 border-r">
-                      {report.severity}
-                    </td>                   
-                    <td className="px-4 py-2 border-r">
-                      {report.status}
-                    </td>                 
-                  </>               
-                )}              
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                      </select>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td className="px-4 py-2 border-r">{report.location}</td>
+                    <td className="px-4 py-2 border-r">{report.severity}</td>
+                    <td className="px-4 py-2 border-r">{report.status}</td>
+                  </>
+                )}
                 <td className="px-4 py-2 text-center border-r">
-                  {report.audio_url ? (                 
-                    <a href={report.audio_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  {report.audio_url ? (
+                    <a
+                      href={report.audio_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
                       Listen
                     </a>
                   ) : (
@@ -167,7 +178,12 @@ export default function AdminSOSPage() {
                 </td>
                 <td className="px-4 py-2 text-center border-r">
                   {report.image_url ? (
-                    <a href={report.image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a
+                      href={report.image_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
                       View
                     </a>
                   ) : (
@@ -176,7 +192,12 @@ export default function AdminSOSPage() {
                 </td>
                 <td className="px-4 py-2 text-center border-r">
                   {report.video_url ? (
-                    <a href={report.video_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a
+                      href={report.video_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
                       Watch
                     </a>
                   ) : (
@@ -186,19 +207,33 @@ export default function AdminSOSPage() {
                 <td className="px-4 py-2 text-center flex justify-center gap-2">
                   {editingId === report.id ? (
                     <>
-                      <Button onClick={() => handleSave(report.id)} className="bg-green-600 hover:bg-green-700 text-white">
+                      <Button
+                        onClick={() => handleSave(report.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
                         Save
                       </Button>
-                      <Button onClick={handleCancelEdit} variant="outline" className="text-gray-700">
+                      <Button
+                        onClick={handleCancelEdit}
+                        variant="outline"
+                        className="text-gray-700"
+                      >
                         Cancel
                       </Button>
                     </>
                   ) : (
                     <>
-                      <Button onClick={() => handleEdit(report)} className="bg-blue-600 hover:bg-blue-700 text-white">
+                      <Button
+                        onClick={() => handleEdit(report)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button onClick={() => handleDelete(report.id)} variant="destructive" className="bg-red-600 hover:bg-red-700 text-white">
+                      <Button
+                        onClick={() => handleDelete(report.id)}
+                        variant="destructive"
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                      >
                         <Trash className="h-4 w-4" />
                       </Button>
                     </>
